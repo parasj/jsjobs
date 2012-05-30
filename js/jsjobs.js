@@ -1,11 +1,11 @@
-/* JavaScript Job Manager */
+/* jsjobs */
 /* Copyright 2012 Paras Jain, parasjain.com */
-/* Jobs are queued work for the VM to handle with the jqmb jobs class being called relatively frequently */
+/* Jobs are queued work for the VM to handle asynchronously, ideal for contacting a server with updates, refreshing page content, etc. */
 
 /* How to use:
 
 Initialize job manager on start:
-window.jobsObj = new Jobs(); jobsd();
+window.jobsObj = new Jobs();
 
 Add a job to the window.jobsObj object, like
 window.jobsObj.addJob(function() { return true; });
@@ -24,15 +24,27 @@ Callbacks when job is completed
 function Jobs() {
 	this.jobslist = {};
 	this.resultSet = {};
+	this.jobFunc = {};
+	this.jobFuncIn = {};
 };
 
-Jobs.prototype.addJob = function(jobFunc, jobname) {
-	var jobid = (window.funcs.size(this.jobslist)) + "" + new Date().getTime(); // Append job create time to jobid
+Jobs.prototype.addJob = function(jobFuncIn, jobname, timeout) {
+	var jobid = (window.jobsObj.size(this.jobslist)) + "" + new Date().getTime(); // Append job create time to jobid
 	if (jobname !== undefined) {
 		jobid = jobname;
 	}
-	this.jobslist[jobid] = jobFunc;
-	console.log("Added job " + jobid + " with object function: " + jobFunc);
+	this.jobFuncIn[jobid] = jobFuncIn;
+	if (timeout == 0) {
+		this.jobFunc[jobid] = function() {
+			var returnVal = jobFuncIn();
+			setTimeout(this.jobFunc[jobid], 1000);
+			return returnVal;
+		};
+	} else {
+		this.jobFunc[jobid] = jobFuncIn;
+	}
+	this.jobslist[jobid] = this.jobFunc[jobid];
+	console.log("Added job " + jobid + " with object function: " + this.jobFunc[jobid]);
 	return jobid;
 };
 
@@ -54,16 +66,31 @@ Jobs.prototype.getResultSet = function() {
 	return this.resultSet;
 };
 
+Jobs.prototype.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+Jobs.prototype.merge = function(obj1,obj2) {
+    var obj3 = {};
+    for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+    for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+    return obj3;
+};
+
 // Jobs Daemon, default refresh of 100ms
 function jobsd(){
 	var jobs = window.jobsObj.jobslist;
-	if (window.funcs.size(jobs) > 0) { // check if jobs is empty
+	if (window.jobsObj.size(jobs) > 0) { // check if jobs is empty
 		var jobid;
 		var jobs_return = {};
 		var job_func;
 		for (jobid in jobs) {
 			job_func = jobs[jobid];
-			console.log("Job ID " + jobid + " is: " + job_func);
+			console.log("Job ID " + jobid);
 			jobs_return[jobid] = job_func();
 		}
 		for (jobid in jobs_return) {
@@ -72,7 +99,7 @@ function jobsd(){
 		}
 
 		//console.log(window.funcs);
-		window.jobsObj.resultSet = window.funcs.merge(window.jobsObj.resultSet, jobs_return);
+		window.jobsObj.resultSet = window.jobsObj.merge(window.jobsObj.resultSet, jobs_return);
 
 		window.jobsObj.jobslist = {};
 		jobs = {};

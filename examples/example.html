@@ -1,0 +1,101 @@
+<html>
+<head>
+	<title>Example for jsjobs</title>
+	<script src="../js/jsjobs.js"></script>
+	<script>
+window.jobsObj = new Jobs(); jobsd();
+
+var update = function() {
+	var currentTime = new Date ( );
+
+	var currentHours = currentTime.getHours ( );
+	var currentMinutes = currentTime.getMinutes ( );
+	var currentSeconds = currentTime.getSeconds ( );
+
+	// Pad the minutes and seconds with leading zeros, if required
+	currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+	currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+
+	// Choose either "AM" or "PM" as appropriate
+	var timeOfDay = ( currentHours < 12 ) ? "AM" : "PM";
+
+	// Convert the hours component to 12-hour format if needed
+	currentHours = ( currentHours > 12 ) ? currentHours - 12 : currentHours;
+
+	// Convert an hours component of "0" to "12"
+	currentHours = ( currentHours == 0 ) ? 12 : currentHours;
+
+	// Compose the string for display
+	var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds + " " + timeOfDay;
+
+	// Update the time display
+	document.getElementById("time").firstChild.nodeValue = currentTimeString;
+}
+
+window.jobsObj.addJob(function() {
+	var currentTime = new Date ( );
+
+	var currentHours = currentTime.getHours ( );
+	var currentMinutes = currentTime.getMinutes ( );
+	var currentSeconds = currentTime.getSeconds ( );
+
+	// Pad the minutes and seconds with leading zeros, if required
+	currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+	currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+
+	// Choose either "AM" or "PM" as appropriate
+	var timeOfDay = ( currentHours < 12 ) ? "AM" : "PM";
+
+	// Convert the hours component to 12-hour format if needed
+	currentHours = ( currentHours > 12 ) ? currentHours - 12 : currentHours;
+
+	// Convert an hours component of "0" to "12"
+	currentHours = ( currentHours == 0 ) ? 12 : currentHours;
+
+	// Compose the string for display
+	var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds + " " + timeOfDay;
+
+	// Update the time display
+	document.getElementById("time").firstChild.nodeValue = currentTimeString;
+
+	return currentTimeString;
+
+}, "updateTime", 1000);
+
+	</script>
+</head>
+<body>
+	<div id="time">Loading...</div><br />
+	We update the time in this div by calling the anonymous function every 1000 seconds, <br />
+<pre>
+
+window.jobsObj.addJob(function() {
+	var currentTime = new Date ( );
+
+	var currentHours = currentTime.getHours ( );
+	var currentMinutes = currentTime.getMinutes ( );
+	var currentSeconds = currentTime.getSeconds ( );
+
+	// Pad the minutes and seconds with leading zeros, if required
+	currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+	currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+
+	// Choose either "AM" or "PM" as appropriate
+	var timeOfDay = ( currentHours < 12 ) ? "AM" : "PM";
+
+	// Convert the hours component to 12-hour format if needed
+	currentHours = ( currentHours > 12 ) ? currentHours - 12 : currentHours;
+
+	// Convert an hours component of "0" to "12"
+	currentHours = ( currentHours == 0 ) ? 12 : currentHours;
+
+	// Compose the string for display
+	var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds + " " + timeOfDay;
+
+	// Update the time display
+	document.getElementById("time").firstChild.nodeValue = currentTimeString;
+});
+
+</pre>
+</body>
+</html>
